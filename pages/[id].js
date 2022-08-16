@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
+
 const Dynamicpage = () => {
   const router = useRouter();
   console.log('router', router.query.id)
@@ -12,7 +13,7 @@ const Dynamicpage = () => {
       </Head>
       <p className={styles.statement}>This is a dynamic page with ID {router.query.id}</p>
       <Link href="/">
-        <a>Link to home</a>
+        <a>Link to</a>
       </Link>
       <br />
       <Link href={

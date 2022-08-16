@@ -6,7 +6,7 @@ import Banner from "../components/banner";
 import Card from "../components/card";
 import coffeeShopListJson from "../data/coffee-stores.json";
 
-// We are putting in this function so we pre-render the content (pre-content generation) ------------ getStaticProps is the function
+// We are using the getStaticPropis function so we pre-render the content (pre-content generation) ------------ getStaticProps is the function
 export async function getStaticProps(context) {
   return {
     props: {
@@ -15,10 +15,9 @@ export async function getStaticProps(context) {
     }, // will be passed to the page component as props
   }
 }
-// end of We are putting in this function so we pre-render the content (pre-content generation)
+// end of We are using the getStaticPropis function so we pre-render the content (pre-content generation) ------------ getStaticProps is the function
 
 export default function Home(props) {
-  console.log("props", props)
   const handleOnBannerBtnClick = () => {
     console.log("hi banner button");
   };
@@ -41,20 +40,28 @@ export default function Home(props) {
             layout='fill'
           />
         </div>
-        <div className={styles.cardLayout}>
-          {props.coffeeStores.map((coffeeStore) => {
-                return (
-                  <Card
-                    key={coffeeStore.id}
-                    name={coffeeStore.name}
-                    imgUrl={coffeeStore.imgUrl}
-                    href={`/coffee-store/${coffeeStore.id}`}
-                  />
-                )
-              }
-            )
-          }
-        </div>
+        {/* This is some sort of if statement I've never seen before, but it essentially says if there are stores (length > 0), render this section */}
+        
+        {props.coffeeStores.length > 0 && (
+            <>
+              <h2 className={styles.heading2}>Toronto Stores</h2>
+              <div className={styles.cardLayout}>
+                {props.coffeeStores.map((coffeeStore) => {
+                      return (
+                        <Card
+                          key={coffeeStore.id}
+                          name={coffeeStore.name}
+                          imgUrl={coffeeStore.imgUrl}
+                          href={`/coffee-store/${coffeeStore.id}`}
+                        />
+                      )
+                    }
+                  )
+                }
+              </div>
+            </>
+          )
+        }
       </main>
     </div>
   )
