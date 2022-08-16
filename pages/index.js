@@ -4,23 +4,32 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Banner from "../components/banner";
 import Card from "../components/card";
-import coffeeShopListJson from "../data/coffee-stores.json";
+import { fetchCoffeeStores } from '../lib/coffee-stores.js'
+import { fetchImageForFoursquareId } from '../lib/coffee-stores'
+// the following line is commented out since we're no longer pulling data from our JSON file, but from an API.
+// import coffeeShopListJson from "../data/coffee-stores.json";
 
 // We are using the getStaticPropis function so we pre-render the content (pre-content generation) ------------ getStaticProps is the function
-export async function getStaticProps(context) {
+export async function getStaticProps(staticProps) {
+  // this is pulling from another partial, which we have created. It says AWAIT because it's an ASYNC function, since the one
+  // in the partial is also AWAIT and ASYNC.
+  const number_of_results = 8
+  const foursquareResponse = await fetchCoffeeStores(number_of_results);
+  var coffeeStores = foursquareResponse
+
   return {
     props: {
-      coffeeStores: coffeeShopListJson,
-      // if we declared coffeeStores: coffeeStores, we could also write just as 'coffeeStores', since the key and the value is the same
+      coffeeStores
+    // if we declared coffeeStores: coffeeStores, we could also write just as 'coffeeStores', since the key and the value is the same
     }, // will be passed to the page component as props
   }
 }
 // end of We are using the getStaticPropis function so we pre-render the content (pre-content generation) ------------ getStaticProps is the function
-
 export default function Home(props) {
   const handleOnBannerBtnClick = () => {
     console.log("hi banner button");
   };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -41,18 +50,20 @@ export default function Home(props) {
           />
         </div>
         {/* This is some sort of if statement I've never seen before, but it essentially says if there are stores (length > 0), render this section */}
-        
+
         {props.coffeeStores.length > 0 && (
             <>
               <h2 className={styles.heading2}>Toronto Stores</h2>
               <div className={styles.cardLayout}>
                 {props.coffeeStores.map((coffeeStore) => {
+                      // console.log('umberto de gracia', coffeeStore.fsq_id)
                       return (
                         <Card
-                          key={coffeeStore.id}
+                          key={coffeeStore.fsq_id}
                           name={coffeeStore.name}
-                          imgUrl={coffeeStore.imgUrl}
-                          href={`/coffee-store/${coffeeStore.id}`}
+                          imgUrl={coffeeStore.imgUrl || "https://images.unsplash.com/photo-1498804103079-a6351b050096?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2468&q=80"}
+                          href={`/coffee-store/${coffeeStore.fsq_id}`}
+                          className={styles.card}
                         />
                       )
                     }

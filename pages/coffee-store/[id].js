@@ -5,22 +5,34 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "../../styles/coffee-store.module.css";
 import cls from "classnames";
+import { fetchCoffeeStores } from '../../lib/coffee-stores'
+import { fetchIndividualCoffeeStore } from '../../lib/coffee-stores'
+import { fetchImageForFoursquareId } from '../../lib/coffee-stores'
 
 // Gonzalo already explained getStaticProps function in index.js
-export function getStaticProps(staticProps) {
+export async function getStaticProps(staticProps) {
+
+  const results = await fetchIndividualCoffeeStore(staticProps.params.id);
+  const imgUrl = await fetchImageForFoursquareId(staticProps.params.id, 1);
+
   return {
     props: {
-      coffeeStores: coffeeShopListJson.find(coffeeStore => {
-        return coffeeStore.id.toString() === staticProps.params.id;
-      }),
+      coffeeStores: results,
+      image: imgUrl,
     },
   }
 }
 
-export function getStaticPaths() {
-  const paths = coffeeShopListJson.map(coffeeStore => {
-    return { params: {id: coffeeStore.id.toString() } }
-  })
+export async function getStaticPaths() {
+  const coffeeStores = await fetchCoffeeStores(1);
+  const paths = coffeeStores.map((coffeeStore) => {
+    return {
+      params: {
+        id: coffeeStore.fsq_id.toString()
+      }
+    }
+  });
+
   return {
     paths: paths,
     fallback: true
@@ -41,9 +53,10 @@ const CoffeeStore = (props) => {
   const handleUpVoteButton = () => {
     console.log("handle upvote button");
   };
- 
-  const { name, address, neighbourhood, imgUrl } = props.coffeeStores;
-  
+
+  const { name, location } = props.coffeeStores;
+  const imgUrl = props.image;
+
   return(
     <div className={styles.container}>
       <Head>
@@ -59,7 +72,7 @@ const CoffeeStore = (props) => {
           <h1 className={styles.name}>{name}</h1>
         </div>
         <Image
-          src={imgUrl}
+          src={imgUrl || "https://images.unsplash.com/photo-1498804103079-a6351b050096?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2468&q=80" }
           height={600}
           width={360}
           className={styles.storeImg}
@@ -69,11 +82,11 @@ const CoffeeStore = (props) => {
       <div className={cls("glass", styles.col2)}>
         <div className={styles.iconWrapper}>
           <Image src={'/static/icons/places.svg'} height={24} width={24} />
-          <p className={styles.text}>{address}</p>
+          <p className={styles.text}>{location.address}</p>
         </div>
         <div className={styles.iconWrapper}>
           <Image src={'/static/icons/nearMe.svg'} height={24} width={24} />
-          <p className={styles.text}>{neighbourhood}</p>
+          <p className={styles.text}>{location.neighborhood || location.cross_street || location.locality }</p>
         </div>
         <div className={styles.iconWrapper}>
           <Image src={'/static/icons/star.svg'} height={24} width={24} />
@@ -85,5 +98,4 @@ const CoffeeStore = (props) => {
     </div>
   )
 }
-
 export default CoffeeStore;
