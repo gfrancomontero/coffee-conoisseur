@@ -15,7 +15,7 @@ import React, { useState, useEffect } from "react";
 export async function getStaticProps(context) {
   console.log("hi getStaticProps", context);
 
-  const coffeeStores = await fetchCoffeeStores();
+  const coffeeStores = await fetchCoffeeStores("", 6);
 
   return {
     props: {
@@ -34,16 +34,18 @@ export default function Home(props) {
   console.log({ locationErrorMsg });
   console.log({ isFindingLocation });
 
+  const [coffeeStores, setCoffeeStores] = useState("");
+  const [coffeeStoresError, setCoffeeStoresError] = useState(null);
+
   useEffect(() => {
     async function setCoffeeStoresByLocation() {
       if (latLong) {
         try {
           const fetchedCoffeeStores = await fetchCoffeeStores(latLong);
           console.log({ fetchedCoffeeStores });
-          // set coffee stores
+          setCoffeeStores(fetchedCoffeeStores);
         } catch (error) {
-          console.log(error);
-          // set error
+          setCoffeeStoresError(error.message);
         }
       }
     }
@@ -73,6 +75,32 @@ export default function Home(props) {
           <Image src="/static/hero-image.png" width={700} height={400} />
         </div>
         {locationErrorMsg && <h3>Something went wrong. {locationErrorMsg}</h3>}
+        {coffeeStoresError && (
+          <h3>Something went wrong. {coffeeStoresError}</h3>
+        )}
+
+        {coffeeStores.length > 0 && (
+          <div className={styles.sectionWrapper}>
+            <h2 className={styles.heading2}>Stores Near me</h2>
+            <div className={styles.cardLayout}>
+              {coffeeStores.map((coffeeStore) => {
+                return (
+                  <Card
+                    key={coffeeStore.id}
+                    name={coffeeStore.name}
+                    imgUrl={
+                      coffeeStore.imgUrl ||
+                      "https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80"
+                    }
+                    href={`/coffee-store/${coffeeStore.id}`}
+                    className={styles.card}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {props.coffeeStores.length > 0 && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Toronto stores</h2>
