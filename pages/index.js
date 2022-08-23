@@ -15,7 +15,7 @@ import React, { useState, useEffect } from "react";
 export async function getStaticProps(context) {
   console.log("hi getStaticProps", context);
 
-  const coffeeStores = await fetchCoffeeStores("", 6);
+  const coffeeStores = await fetchCoffeeStores();
 
   return {
     props: {
