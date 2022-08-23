@@ -24,12 +24,12 @@ export default function Home(props) {
     useTrackLocation();
 
   console.log({ latLong, locationErrorMsg });
-
+  
   useEffect(() => {
-    async function setCoffeeStoresByLocation() {
+    async function setCoffeeStoresByLocation(latLong) {
       if (latLong) {
         try {
-          const fetchedCoffeeStores = await fetchCoffeeStores(latLong);
+          const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 8);
           console.log({ fetchedCoffeeStores })
         } catch (error) {
           //set error
@@ -37,7 +37,7 @@ export default function Home(props) {
         }
       }
     }
-    setCoffeeStoresByLocation();
+    setCoffeeStoresByLocation(latLong);
   }, [latLong]);
 
   const handleOnBannerBtnClick = () => {
