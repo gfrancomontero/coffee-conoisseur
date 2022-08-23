@@ -29,9 +29,9 @@ const useTrackLocation = () => {
   };
 
   return {
-    latLong,
-    locationErrorMsg,
     handleTrackLocation,
+    locationErrorMsg,
+    latLong,
     isFindingLocation,
   };
 };
