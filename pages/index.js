@@ -9,7 +9,9 @@ import { fetchCoffeeStores } from "../lib/coffee-stores";
 import useTrackLocation from "../hooks/use-track-location";
 
 export async function getStaticProps(context) {
+
   const coffeeStores = await fetchCoffeeStores();
+
   return {
     props: {
       coffeeStores,
